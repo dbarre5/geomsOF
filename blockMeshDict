@@ -1,0 +1,104 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 1;
+
+backgroundMesh
+{
+    bubbleOpen  20.;
+    bubbleClose     21.;
+    domainHeight 1.0;
+    domainLength 32.;
+}
+
+vertices
+(
+    (0 0 0)								//0
+    ($:backgroundMesh.bubbleOpen 0 0)					//1
+    ($:backgroundMesh.bubbleOpen $:backgroundMesh.domainHeight 0)	//2
+    (0 $:backgroundMesh.domainHeight 0)					//3
+    (0 0 0.1)								//4
+    ($:backgroundMesh.bubbleOpen 0 0.1)					//5
+    ($:backgroundMesh.bubbleOpen $:backgroundMesh.domainHeight 0.1)	//6
+    (0 $:backgroundMesh.domainHeight 0.1)				//7
+
+    //($:backgroundMesh.bubbleOpen 0 0)					  1     0
+    ($:backgroundMesh.bubbleClose 0 0)					//8     1
+    ($:backgroundMesh.bubbleClose $:backgroundMesh.domainHeight 0)	//9     2
+    //($:backgroundMesh.bubbleOpen $:backgroundMesh.domainHeight 0)	  2     3
+    //($:backgroundMesh.bubbleOpen 0 0.1)				  5     4 
+    ($:backgroundMesh.bubbleClose 0 0.1)				//10    5
+    ($:backgroundMesh.bubbleClose $:backgroundMesh.domainHeight 0.1)	//11    6
+    // ($:backgroundMesh.bubbleOpen $:backgroundMesh.domainHeight 0.1)	  6     7
+
+    //($:backgroundMesh.bubbleClose 0 0)				  8     0
+    ($:backgroundMesh.domainLength 0 0)					//12    1
+    ($:backgroundMesh.domainLength $:backgroundMesh.domainHeight 0)	//13    2
+    //($:backgroundMesh.bubbleClose $:backgroundMesh.domainHeight 0)	  9     3
+    //($:backgroundMesh.bubbleClose 0 0.1)				  10    4
+    ($:backgroundMesh.domainLength 0 0.1)				//14    5
+    ($:backgroundMesh.domainLength $:backgroundMesh.domainHeight 0.1)	//15    6
+    //($:backgroundMesh.bubbleClose $:backgroundMesh.domainHeight 0.1)	  11    7
+
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (200 10 1) simpleGrading (1 1 1)
+    hex (1 8 9 2 5 10 11 6) (10 10 1) simpleGrading (1 1 1)
+    hex (8 12 13 9 10 14 15 11) (110 10 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+patches
+(
+    patch leftWall
+    (
+        (3 7 4 0)
+    )
+
+    patch rightWall
+    (
+        (13 15 14 12)
+    )
+    wall bottomWall
+    (
+        (0 4 5 1)
+        (8 10 14 12)
+
+    )
+
+    patch injection
+    (
+        (1 5 10 8)
+    )
+    wall topWall
+    (
+        (2 6 11 9)
+        (9 11 15 13)
+        (3 7 6 2)
+    )
+
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //
